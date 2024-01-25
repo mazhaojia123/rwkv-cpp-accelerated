@@ -3,6 +3,8 @@ This is a super simple c++/cuda implementation of rwkv with no pytorch/libtorch 
 
 included is a simple example of how to use in both c++ and python.
 
+See sycl support [here](./sycl_support.md).
+
 ### Features
 
 * Direct Disk -> Gpu loading ( practically no ram needed )

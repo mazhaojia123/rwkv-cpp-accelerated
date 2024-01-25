@@ -1,4 +1,4 @@
-VERSION=realese
+VERSION=release
 SRC_DIR := ../../include/rwkv
 
 all: nvidia amd vulkan
@@ -7,6 +7,10 @@ $(VERSION):
 	@echo "\033[0;32mCreating ./$(VERSION) dir with vocab...\033[0m"
 	mkdir -p $(VERSION)
 	cp -r $(SRC_DIR)/tokenizer/vocab $(VERSION)/
+
+sycl: $(VERSION)
+	@echo "Building for SYCL..."
+	clang++ -fsycl -fsycl-targets=nvptx64-nvidia-cuda --std=c++17 ./storygen.cpp $(SRC_DIR)/sycl/rwkv.dp.cpp -I../../include -o ./$(VERSION)/storygen-sycl
 
 # Rule for Nvidia GPUs
 nvidia: $(VERSION)
