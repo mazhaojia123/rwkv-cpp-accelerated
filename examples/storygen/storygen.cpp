@@ -1,5 +1,7 @@
 #include "rwkv.h"
+#include <chrono>
 #include <filesystem>
+#include <cuda_runtime.h>
 
 int main(){
     std::string initPrompt = "### Instruction: Write a story/book using the themes and details provided\n\
@@ -39,10 +41,12 @@ int main(){
         {
             
             if(!exit){
-            std::cout << "continue? (y/n):";
-            std::string inputs;
-            std::getline(std::cin, inputs);
-            output = "\n\n";
+                std::cout << std::endl;
+                Rwkv.summarize();
+                std::cout << "continue? (y/n):";
+                std::string inputs;
+                std::getline(std::cin, inputs);
+                output = "\n\n";
 
                 if(inputs == "y")
                 {
@@ -62,7 +66,15 @@ int main(){
             Rwkv.loadContext(input);
         }
         
+        // NOTE: 关注这个函数的调用
+        auto start = std::chrono::high_resolution_clock::now();
         Rwkv.forward(lasttoken);
+        cudaDeviceSynchronize();
+        auto stop = std::chrono::high_resolution_clock::now();
+        auto dura = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+        Rwkv.duration += dura.count();
+        Rwkv.cnt_invocation++;
+
         Rwkv.out[0] = -99; // <|endoftext|> token is -99
         lasttoken = typical(Rwkv.out, 0.8,0.7);
         std::cout << Rwkv.tokenizer->decode({(long int)lasttoken});

@@ -245,6 +245,14 @@ class RWKVState
 class RWKV
 {
 public:
+    // TODO: Metrics for testing 
+    int cnt_invocation;
+    double duration;
+    void summarize() {
+        printf("[SUMMARY] Kernel invokation is %d \n", cnt_invocation);
+        printf("[SUMMARY] Kernel forward average duration is %.2f ms. \n", duration/cnt_invocation);
+    }
+
     // Tensor pointers
     int **tensors = new int *[46];
 
@@ -274,6 +282,8 @@ public:
     double* statedd;
 
     RWKV(){
+        cnt_invocation = 0;
+        duration = 0;
 
     };
 
